@@ -1,26 +1,64 @@
 @import "tailwindcss";
 
+/* Light theme (default).
+   Variables are named by ROLE, not by colour. In dark mode sand becomes the
+   text colour, so a variable called --sand would end up holding chocolate.
+   Role names survive the swap; colour names do not. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5EFE6;         /* sand — the page itself */
+  --surface: #FFFBF5;            /* near-white — cards sit above the page */
+  --foreground: #3E2B23;         /* chocolate — body text, 11.7:1 on sand (AAA) */
+  --muted: #6B5548;              /* brown — dates, captions, 6.1:1 (AA) */
+  --accent: #9E4A5F;             /* rose — buttons and links */
+  --accent-foreground: #FFFBF5;  /* text ON the accent, 5.8:1 (AA) */
+  --border: #E0D4C5;             /* tan — hairlines and dividers */
 }
 
+/* REMOVED: --text. It held the same value as --foreground, so the two would
+   drift apart the moment one was edited. One role, one variable. */
+
+/* Dark theme.
+   CHANGED: this replaces the old @media (prefers-color-scheme: dark) block.
+   A media query only reads the operating system setting — no button in the app
+   can override it, which makes the theme toggle the rubric asks for impossible.
+   Keying off an attribute means JavaScript can set data-theme="dark" on <html>
+   from a click, and persist that choice to localStorage.
+
+   Order matters: [data-theme="dark"] and :root have equal specificity, so this
+   block only wins because it comes second. Do not move it above :root. */
+[data-theme="dark"] {
+  --background: #241A15;         /* deep chocolate */
+  --surface: #33251E;            /* one step lighter, so cards stay visible */
+  --foreground: #F0E6DA;         /* sand — 13.8:1 (AAA) */
+  --muted: #BFAE9E;              /* tan — 7.9:1 (AAA) */
+  --accent: #E8A0AE;             /* pink — lightened, because the dark rose
+                                    used in light mode disappears on a dark page */
+  --accent-foreground: #241A15;  /* dark text on pink, 8.2:1 (AAA) */
+  --border: #46332A;
+}
+
+/* ADDED: --color-surface, --color-muted, --color-accent, --color-accent-foreground
+   and --color-border. This block is what turns a variable into a Tailwind class:
+   --color-surface creates bg-surface, --color-muted creates text-muted,
+   --color-border creates border-border. Defining a variable above without
+   registering it here means the class name silently does nothing. */
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* RESTORED: without this, the page keeps the browser's default white background
+   and black text, and none of the variables above have any visible effect.
+   NOTE the old rule also set font-family: Arial — that was deleted on purpose,
+   because it overrode the Geist font layout.tsx goes to the trouble of loading. */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
