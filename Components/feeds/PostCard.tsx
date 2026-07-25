@@ -2,20 +2,28 @@ import Link from "next/link";
 import type { Post } from "@/lib/types";
 
 interface PostCardProps {
-    post: Post;
-    isExpanded?: boolean;
-    onToggle: () => void;
+  post: Post;
+  isExpanded: boolean;
+  onToggle: () => void;
+  showImage?: boolean;
 }
 
-export default function PostCard({ post, isExpanded, onToggle }: PostCardProps) {
-    return (
-        <article className="flex h-full flex-col overflow-hidden rounded-lg border border bg-surface">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={post.imageUrl}
-        alt={post.title}
-        className="h-40 w-full object-cover"
-      />
+export default function PostCard({
+  post,
+  isExpanded,
+  onToggle,
+  showImage = true,
+}: PostCardProps) {
+  return (
+    <article className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface">
+      {showImage && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={post.imageUrl}
+          alt={post.title}
+          className="h-40 w-full object-cover"
+        />
+      )}
 
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h3 className="text-lg font-semibold text-foreground">{post.title}</h3>
