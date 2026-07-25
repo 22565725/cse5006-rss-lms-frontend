@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { navLinks } from "@/lib/siteConfig";
+import ThemeToggle from "../theme/ThemeToggle";
 
 export default function HamburgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,6 +57,9 @@ export default function HamburgerMenu() {
             ))}
           </ul>
         </nav>
+        <div className="mt-2 border-t border-border pt-2">
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );
