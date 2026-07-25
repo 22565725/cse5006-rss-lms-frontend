@@ -1,2 +1,1 @@
-# my-app
-Cloud Web applications Assignment -1 
+Frontend design and usability assessment for an RSS Server and LMS application.
