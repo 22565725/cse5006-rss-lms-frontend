@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import PostCard from "./PostCard";
 import type { Post } from "@/lib/types";
 
@@ -9,19 +10,12 @@ interface FeedListProps {
 }
 
 export default function FeedList({ posts }: FeedListProps) {
-  const [savedPosts, setSavedPosts] = useState<Post[]>([]);
+  const [savedPosts] = useLocalStorage<Post[]>("myData", []);
+  const [layout] = useLocalStorage<"grid" | "list">("feedLayout", "grid");
+  const [showImages] = useLocalStorage<boolean>("feedShowImages", true);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("myData");
-    if (!stored) return;
-    try {
-      setSavedPosts(JSON.parse(stored) as Post[]);
-    } catch (error) {
-      console.error("Could not read saved posts:", error);
-    }
-  }, []);
 
   const allPosts = [...savedPosts, ...posts];
 
@@ -30,6 +24,11 @@ export default function FeedList({ posts }: FeedListProps) {
         post.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : allPosts;
+
+  const listClass =
+    layout === "grid"
+      ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      : "flex flex-col gap-4";
 
   return (
     <div className="flex flex-col gap-4">
@@ -52,11 +51,12 @@ export default function FeedList({ posts }: FeedListProps) {
       {filteredPosts.length === 0 ? (
         <p className="text-muted">No posts match your search.</p>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className={listClass}>
           {filteredPosts.map((post) => (
             <li key={post.id}>
               <PostCard
                 post={post}
+                showImage={showImages}
                 isExpanded={expandedId === post.id}
                 onToggle={() =>
                   setExpandedId(expandedId === post.id ? null : post.id)
