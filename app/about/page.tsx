@@ -41,7 +41,7 @@ export default function AboutPage() {
           </dl>
         </section>
 
-        <section className={boxClass}>
+         <section className={boxClass}>
           <h2 className="text-lg font-semibold text-foreground">
             Video walkthrough
           </h2>
@@ -50,12 +50,14 @@ export default function AboutPage() {
             and add a post.
           </p>
           {siteConfig.videoUrl ? (
-            <iframe
-              src={siteConfig.videoUrl}
-              title="Walkthrough of the RSS to LMS frontend"
-              allowFullScreen
+            <video
+              controls
+              preload="metadata"
               className="aspect-video w-full rounded-md border border-border"
-            />
+            >
+              <source src={siteConfig.videoUrl} type="video/mp4" />
+              Your browser cannot play this video.
+            </video>
           ) : (
             <div className="flex aspect-video w-full items-center justify-center rounded-md border border-dashed border-border">
               <p className="text-muted">Video coming soon</p>

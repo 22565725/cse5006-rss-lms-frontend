@@ -7,7 +7,7 @@ export const siteConfig = {
   studentId: "22565725",
 
   // Add the walkthrough video link when the recording is ready.
-  videoUrl: "",
+  videoUrl: "/video/walkthrough.mp4",
 } as const;
 
 export const navLinks = [
