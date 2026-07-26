@@ -5,6 +5,7 @@ import { siteConfig } from "@/lib/siteConfig";
 import Header from "@/Components/layout/Header";
 import Footer from "@/Components/layout/Footer";
 import { ThemeProvider } from "@/Components/theme/ThemeProvider";
+import Breadcrumbs from "@/Components/navigation/Breadcrumbs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +35,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">    
         <ThemeProvider>
-        <Header />
-        {children}
-        <Footer />
+          <Header />
+          <Breadcrumbs />
+          <div className="mx-auto w-full max-w-5xl flex-1 p-4">
+            {children}
+          </div>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
