@@ -7,7 +7,7 @@ export default function PostDetail({ post }: { post: Post }) {
         <img 
         src={post.imageUrl}
          alt={post.title} 
-         className="max-h-80 w-full object-cover" 
+         className="mx-auto max-h-96 w-full bg-background object-contain"
          />
         <div className="flex flex-col gap-3 p-6">
             <h1 className="text-2xl font-semibold text-foreground">
