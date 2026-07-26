@@ -21,7 +21,7 @@ export default function PostCard({
         <img
           src={post.imageUrl}
           alt={post.title}
-          className="h-40 w-full object-cover"
+          className="aspect-[14/9] w-full bg-background object-contain"
         />
       )}
 
