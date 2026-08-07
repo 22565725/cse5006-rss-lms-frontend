@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 type Theme = "light" | "dark";
 
@@ -10,28 +10,41 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
-const STORAGE_KEY = "theme";
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [isLoaded, setIsLoaded] = useState(false);
+/* CHANGED: the theme now lives in a cookie, not localStorage.
+   localStorage is never sent anywhere, so the server could not know the
+   user's choice and always guessed "light" — the visible flash on load.
+   A cookie travels in the headers of every request, so layout.tsx can read
+   it and render <html data-theme="dark"> straight away.
 
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === "dark" || saved === "light") {
-      setTheme(saved);
-    }
-    setIsLoaded(true);
-  }, []);
+   Division of labour: the SERVER reads the cookie (layout.tsx), the CLIENT
+   writes it (below). Cookies cannot be set during server rendering, because
+   HTTP will not accept new headers once the response has started streaming. */
+export function ThemeProvider({
+  initialTheme,
+  children,
+}: {
+  initialTheme: Theme;
+  children: React.ReactNode;
+}) {
+  /* The server already applied this theme to <html>, so starting from it means
+     server and client agree — no hydration mismatch, nothing to correct. */
+  const [theme, setTheme] = useState<Theme>(initialTheme);
 
-  useEffect(() => {
-    if (!isLoaded) return;
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme, isLoaded]);
+  /* REMOVED: both useEffects and the isLoaded flag. They existed only to patch
+     up the server's wrong guess after paint. The server is right the first time
+     now, so there is nothing left to patch. */
 
-  const toggleTheme = () =>
-    setTheme((current) => (current === "light" ? "dark" : "light"));
+  const toggleTheme = () => {
+    const next: Theme = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    // Repaint immediately; CSS keys off this attribute, not off React state.
+    document.documentElement.setAttribute("data-theme", next);
+    // path=/  — send it on every page, not just this one.
+    // max-age  — one year; without it the cookie dies when the browser closes.
+    // SameSite=Lax — do not leak the cookie on cross-site requests.
+    document.cookie = `theme=${next};path=/;max-age=31536000;SameSite=Lax`;
+  };
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

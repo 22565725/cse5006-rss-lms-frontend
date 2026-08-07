@@ -10,13 +10,12 @@ export default function SettingsPage() {
   const [layout, setLayout] = useLocalStorage<Layout>("feedLayout", "grid");
   const [showImages, setShowImages] = useLocalStorage<boolean>("feedShowImages", true);
   const [message, setMessage] = useState("");
+  // ADDED: replaces window.confirm. See the comment on the markup below.
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const clearSavedPosts = () => {
-    const confirmed = window.confirm(
-      "Delete every post you have created? This cannot be undone."
-    );
-    if (!confirmed) return;
     window.localStorage.removeItem("myData");
+    setIsConfirming(false);
     setMessage("Your saved posts have been cleared.");
   };
 
@@ -66,10 +65,39 @@ export default function SettingsPage() {
 
         <section className={boxClass}>
           <h2 className="text-lg font-semibold text-foreground">Your posts</h2>
-          <button type="button" onClick={clearSavedPosts}
-            className="self-start rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground">
-            Clear my saved posts
-          </button>
+
+          {/* CHANGED: window.confirm replaced with an in-page confirmation.
+              window.confirm draws an operating-system dialog — it cannot be
+              themed, cannot be styled, and looks identical in light and dark
+              mode, which is exactly the "themes should reach the buttons"
+              problem. It also blocks the whole browser tab while open.
+              role="alert" makes screen readers announce the warning when it
+              appears. Nothing steals focus: the buttons follow the trigger in
+              DOM order, so Tab reaches them naturally. */}
+          {isConfirming ? (
+            <div className="flex flex-col gap-2">
+              <p role="alert" className="text-sm text-foreground">
+                Delete every post you have created? This cannot be undone.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={clearSavedPosts}
+                  className="rounded-md bg-danger px-3 py-2 text-sm text-danger-foreground transition-opacity hover:opacity-90">
+                  Yes, delete my posts
+                </button>
+                <button type="button" onClick={() => setIsConfirming(false)}
+                  className="rounded-md border border-border px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent hover:text-accent-foreground">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button type="button"
+              onClick={() => { setIsConfirming(true); setMessage(""); }}
+              className="self-start rounded-md border border-danger px-3 py-2 text-sm text-danger transition-colors hover:bg-danger hover:text-danger-foreground">
+              Clear my saved posts
+            </button>
+          )}
+
           <p className="text-sm text-muted" aria-live="polite">{message}</p>
         </section>
       </div>
