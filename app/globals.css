@@ -5,12 +5,29 @@
    text colour, so a variable called --sand would end up holding chocolate.
    Role names survive the swap; colour names do not. */
 :root {
+  /* ADDED: color-scheme tells the BROWSER which palette to paint its own UI in —
+     scrollbars, the search field's clear button, form control chrome. None of
+     that is reachable from our CSS; the browser owns it. Without this line the
+     dark theme still had light scrollbars and light native controls.
+     ADDED: accent-color recolours checkboxes and radio buttons. They are drawn
+     by the OS, so background/border classes never touched them — which is why
+     the Settings radios stayed browser-blue in both themes. */
+  color-scheme: light;
+  accent-color: var(--accent);
+
   --background: #F5EFE6;         /* sand — the page itself */
   --surface: #FFFBF5;            /* near-white — cards sit above the page */
   --foreground: #3E2B23;         /* chocolate — body text, 11.7:1 on sand (AAA) */
   --muted: #6B5548;              /* brown — dates, captions, 6.1:1 (AA) */
   --accent: #9E4A5F;             /* rose — buttons and links */
+  --accent-hover: #843D4F;       /* ADDED: darker rose for hover. The primary
+                                    button had no hover state at all, because
+                                    there was no themeable colour to give it. */
   --accent-foreground: #FFFBF5;  /* text ON the accent, 5.8:1 (AA) */
+  --danger: #A33A3A;             /* ADDED: destructive actions. Deliberately a
+                                    different hue from the accent — "delete
+                                    everything" must not look like "read more". */
+  --danger-foreground: #FFFBF5;  /* 6.1:1 on danger (AA) */
   --border: #E0D4C5;             /* tan — hairlines and dividers */
 }
 
@@ -27,13 +44,23 @@
    Order matters: [data-theme="dark"] and :root have equal specificity, so this
    block only wins because it comes second. Do not move it above :root. */
 [data-theme="dark"] {
+  /* Same two properties, flipped. color-scheme: dark is what turns the
+     scrollbars and native form chrome dark to match the page. */
+  color-scheme: dark;
+  accent-color: var(--accent);
+
   --background: #241A15;         /* deep chocolate */
   --surface: #33251E;            /* one step lighter, so cards stay visible */
   --foreground: #F0E6DA;         /* sand — 13.8:1 (AAA) */
   --muted: #BFAE9E;              /* tan — 7.9:1 (AAA) */
   --accent: #E8A0AE;             /* pink — lightened, because the dark rose
                                     used in light mode disappears on a dark page */
+  --accent-hover: #F2BCC6;       /* hover goes LIGHTER here, not darker. On a
+                                    dark page "darker" reads as disabled. */
   --accent-foreground: #241A15;  /* dark text on pink, 8.2:1 (AAA) */
+  --danger: #E98A8A;             /* lightened, same reason as the accent: the
+                                    light theme's deep red vanishes on a dark page */
+  --danger-foreground: #241A15;  /* dark text on light red, 7.9:1 (AAA) */
   --border: #46332A;
 }
 
@@ -48,7 +75,10 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-foreground: var(--accent-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
   --color-border: var(--border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
