@@ -15,13 +15,22 @@ export default function PostCard({
   showImage = true,
 }: PostCardProps) {
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface">
+    /* CHANGED: "use Cards rather than bricks". A card is a surface that sits
+       ABOVE the page and reacts to the pointer; the old version was a flat
+       outlined rectangle, which is what made it read as a brick. Three things
+       do the work: a resting shadow (it sits above), a deeper shadow plus a
+       small lift on hover (it responds), and a divider under the image (a
+       distinct media region rather than one undifferentiated block).
+       NOT changed: object-contain. Commits 6ca087e and 3461b50 chose to show
+       posts' full images instead of cropping them — that is a decision, so the
+       card frame changes around it and the image fit stays as it was. */
+    <article className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       {showImage && (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={post.imageUrl}
           alt={post.title}
-          className="aspect-[14/9] w-full bg-background object-contain"
+          className="aspect-[14/9] w-full border-b border-border bg-background object-contain"
         />
       )}
 
@@ -50,7 +59,7 @@ export default function PostCard({
 
           <Link
             href={`/feeds/${post.id}`}
-            className="rounded-md bg-accent px-3 py-2 text-sm text-accent-foreground"
+            className="rounded-md bg-accent px-3 py-2 text-sm text-accent-foreground transition-colors hover:bg-accent-hover"
           >
             Read more
           </Link>
